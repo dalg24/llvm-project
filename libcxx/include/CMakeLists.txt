@@ -440,6 +440,7 @@ set(files
   __iterator/wrap_iter.h
   __locale
   __mbstate_t.h
+  __mdspan/extents.h
   __memory/addressof.h
   __memory/align.h
   __memory/aligned_alloc.h
@@ -850,6 +851,7 @@ set(files
   locale.h
   map
   math.h
+  mdspan
   memory
   memory_resource
   mutex
