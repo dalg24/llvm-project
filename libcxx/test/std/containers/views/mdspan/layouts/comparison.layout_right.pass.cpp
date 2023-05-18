@@ -9,10 +9,10 @@
 
 // <mdspan>
 
-// template<class OtherIndexType, size_t... OtherExtents>
-//     friend constexpr bool operator==(const extents&,
-//                                      const extents<OtherIndexType, OtherExtents...>&) noexcept;
+// template<class OtherExtents>
+//   friend constexpr bool operator==(const mapping& x, const mapping<OtherExtents>& y) noexcept;
 //                                      `
+// Constraints: extents_type::rank() == OtherExtents::rank() is true.
 
 #include <mdspan>
 #include <type_traits>
@@ -21,25 +21,16 @@
 
 #include "test_macros.h"
 
-// <mdspan>
-//
-// template<class OtherIndexType, size_t... OtherExtents>
-//   friend constexpr bool operator==(const extents& lhs,
-//                                    const extents<OtherIndexType, OtherExtents...>& rhs) noexcept;
-//
-// Returns: true if lhs.rank() equals rhs.rank() and
-// if lhs.extent(r) equals rhs.extent(r) for every rank index r of rhs, otherwise false.
-//
-
 template <class To, class From>
 constexpr void test_comparison(bool equal, To dest_exts, From src_exts) {
-  std::layout_right::template mapping<To> dest(dest_exts);
-  std::layout_right::template mapping<From> src(src_exts);
+  std::layout_right::mapping<To> dest(dest_exts);
+  std::layout_right::mapping<From> src(src_exts);
   ASSERT_NOEXCEPT(dest == src);
   assert((dest == src) == equal);
-  assert((dest != src) != equal);
+  assert((dest != src) == !equal);
 }
 
+// FIXME the standard says comparison it is constrained so I expect we should test you can't compare them rather than they compare not equal
 template <class T1, class T2>
 constexpr void test_comparison_different_rank() {
   constexpr size_t D = std::dynamic_extent;

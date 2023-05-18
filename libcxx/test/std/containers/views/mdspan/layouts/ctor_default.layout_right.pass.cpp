@@ -11,18 +11,14 @@
 
 // Test default construction:
 //
-// constexpr extents() noexcept = default;
-//
-// Remarks: since the standard uses an exposition only array member, dynamic extents
-// need to be zero intialized!
+// constexpr mapping() noexcept = default;
 
 #include <mdspan>
 #include <cassert>
-#include <array>
 
 #include "test_macros.h"
 
-template<class E>
+template <class E>
 constexpr void test_construction() {
   using M = std::layout_right::mapping<E>;
   ASSERT_NOEXCEPT(M{});
@@ -32,9 +28,10 @@ constexpr void test_construction() {
   // check correct extents are returned
   assert(m.extents() == e);
 
+  // NOTE should we be passing it in instead
   // check required_span_size()
   typename E::index_type expected_size = 1;
-  for(typename E::rank_type r = 0; r < E::rank(); r++)
+  for (typename E::rank_type r = 0; r < E::rank(); r++)
     expected_size *= e.extent(r);
   assert(m.required_span_size() == expected_size);
 }

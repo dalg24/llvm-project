@@ -59,10 +59,10 @@ public:
       : __extents_(__other.extents()) {
     _LIBCPP_ASSERT(
         __mdspan_detail::__is_representable_as<index_type>(__other.required_span_size()),
-        "layout_right::mapping converting ctor: other.required_span_size() not representable in index_type.");
+        "layout_right::mapping converting ctor: other.required_span_size() must be representable as index_type.");
   }
 
-// FIX_ME: add when we add other layouts
+// FIXME: add when we add other layouts
 #  if 0
     template<class _OtherExtents>
       constexpr explicit(!is_convertible_v<_OtherExtents, extents_type>)

@@ -11,33 +11,38 @@
 
 // Test default iteration:
 //
-// constexpr extents() noexcept = default;
+// template<class... Indices>
+//   constexpr index_type operator()(Indices...) const noexcept;
 //
-// Remarks: since the standard uses an exposition only array member, dynamic extents
-// need to be zero intialized!
+// Constraints:
+//   * sizeof...(Indices) == extents_type::rank() is true,
+//   * (is_convertible_v<Indices, index_type> && ...) is true, and
+//   * (is_nothrow_constructible_v<index_type, Indices> && ...) is true.
+//
+// Preconditions:
+//   * extents_type::index-cast(i) is a multidimensional index in extents_.
 
 #include <mdspan>
 #include <cassert>
-#include <array>
-#include <cstdio>
+
 #include "test_macros.h"
 
-template<class M, class T, class ... Args>
-constexpr void iterate_right(M m, T& count, Args ... args) {
+template <class M, class T, class... Args>
+constexpr void iterate_right(M m, T& count, Args... args) {
   constexpr size_t r = sizeof...(Args);
   if constexpr (M::extents_type::rank() == r) {
     ASSERT_NOEXCEPT(m(args...));
     assert(count == m(args...));
     count++;
   } else {
-    for(typename M::index_type i = 0; i < m.extents().extent(r); i++) {
-      iterate_right(m, count, args ..., i);
+    for (typename M::index_type i = 0; i < m.extents().extent(r); i++) {
+      iterate_right(m, count, args..., i);
     }
   }
 }
 
-template<class E, class ... Args>
-constexpr void test_iteration(Args ... args) {
+template <class E, class... Args>
+constexpr void test_iteration(Args... args) {
   using M = std::layout_right::mapping<E>;
   M m(E(args...));
 

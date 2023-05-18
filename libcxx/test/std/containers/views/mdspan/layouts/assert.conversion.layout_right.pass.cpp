@@ -11,24 +11,13 @@
 
 // <mdspan>
 
-// template<class OtherIndexType, size_t... OtherExtents>
-//     constexpr explicit(see below) extents(const extents<OtherIndexType, OtherExtents...>&) noexcept;
+// template<class OtherExtents>
+//   constexpr explicit(!is_convertible_v<OtherExtents, extents_type>)
+//     mapping(const mapping<OtherExtents>&) noexcept;
+
+// Constraints: is_constructible_v<extents_type, OtherExtents> is true.
 //
-// Constraints:
-//   * sizeof...(OtherExtents) == rank() is true.
-//   * ((OtherExtents == dynamic_extent || Extents == dynamic_extent ||
-//       OtherExtents == Extents) && ...) is true.
-//
-// Preconditions:
-//   * other.extent(r) equals Er for each r for which Er is a static extent, and
-//   * either
-//      - sizeof...(OtherExtents) is zero, or
-//      - other.extent(r) is representable as a value of type index_type for
-//        every rank index r of other.
-//
-// Remarks: The expression inside explicit is equivalent to:
-//          (((Extents != dynamic_extent) && (OtherExtents == dynamic_extent)) || ... ) ||
-//          (numeric_limits<index_type>::max() < numeric_limits<OtherIndexType>::max())
+// Preconditions: other.required_span_size() is representable as a value of type index_type.
 
 #include <mdspan>
 #include <cassert>
@@ -38,15 +27,15 @@
 int main() {
   constexpr size_t D = std::dynamic_extent;
   std::extents<int, D, D> arg_exts{100, 5};
-  std::layout_right::template mapping<std::extents<int, D, D>> arg(arg_exts);
+  std::layout_right::mapping<std::extents<int, D, D>> arg(arg_exts);
 
   // working case
   {
-    [[maybe_unused]] std::layout_right::template mapping<std::extents<size_t, D, 5>> m(arg); // should work
+    [[maybe_unused]] std::layout_right::mapping<std::extents<size_t, D, 5>> m(arg); // should work
   }
   // mismatch of static extent
   {
-    TEST_LIBCPP_ASSERT_FAILURE(([=] { std::layout_right::template mapping<std::extents<int, D, 3>> m(arg); }()),
+    TEST_LIBCPP_ASSERT_FAILURE(([=] { std::layout_right::mapping<std::extents<int, D, 3>> m(arg); }()),
                                "extents construction: mismatch of provided arguments with static extents.");
   }
   // value out of range
@@ -54,7 +43,8 @@ int main() {
     // check extents would be constructible
     [[maybe_unused]] std::extents<char, D, 5> e(arg_exts);
     // but the product is not, so we can't use it for layout_right
-    TEST_LIBCPP_ASSERT_FAILURE(([=] { std::layout_right::template mapping<std::extents<char, D, 5>> m(arg); }()),
-                               "layout_right::mapping converting ctor: other.required_span_size() not representable in index_type.");
+    TEST_LIBCPP_ASSERT_FAILURE(
+        ([=] { std::layout_right::template mapping<std::extents<char, D, 5>> m(arg); }()),
+        "layout_right::mapping converting ctor: other.required_span_size() not representable in index_type.");
   }
 }

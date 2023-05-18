@@ -9,28 +9,17 @@
 
 // <mdspan>
 
-// template<class OtherIndexType, size_t... OtherExtents>
-//     constexpr explicit(see below) extents(const extents<OtherIndexType, OtherExtents...>&) noexcept;
+// template<class OtherExtents>
+//   constexpr explicit(!is_convertible_v<OtherExtents, extents_type>)
+//     mapping(const mapping<OtherExtents>&) noexcept;
+
+// Constraints: is_constructible_v<extents_type, OtherExtents> is true.
 //
-// Constraints:
-//   * sizeof...(OtherExtents) == rank() is true.
-//   * ((OtherExtents == dynamic_extent || Extents == dynamic_extent ||
-//       OtherExtents == Extents) && ...) is true.
-//
-// Preconditions:
-//   * other.extent(r) equals Er for each r for which Er is a static extent, and
-//   * either
-//      - sizeof...(OtherExtents) is zero, or
-//      - other.extent(r) is representable as a value of type index_type for
-//        every rank index r of other.
-//
-// Remarks: The expression inside explicit is equivalent to:
-//          (((Extents != dynamic_extent) && (OtherExtents == dynamic_extent)) || ... ) ||
-//          (numeric_limits<index_type>::max() < numeric_limits<OtherIndexType>::max())
+// Preconditions: other.required_span_size() is representable as a value of type index_type
 
 #include <mdspan>
 #include <type_traits>
-#include <concepts>
+#include <concepts> // what do we use from there?
 #include <cassert>
 #include <limits>
 
@@ -43,8 +32,8 @@ constexpr void test_implicit_conversion(To dest, From src) {
 
 template <bool implicit, class ToE, class FromE>
 constexpr void test_conversion(FromE src_exts) {
-  using To   = typename std::layout_right::template mapping<ToE>;
-  using From = typename std::layout_right::template mapping<FromE>;
+  using To   = std::layout_right::mapping<ToE>;
+  using From = std::layout_right::mapping<FromE>;
   From src(src_exts);
 
   ASSERT_NOEXCEPT(To(src));
@@ -81,53 +70,52 @@ constexpr void test_conversion() {
   // clang-format on
 }
 
-template<class IdxT, size_t ... Extents>
+template <class IdxT, size_t... Extents>
 using map_t = typename std::layout_right::template mapping<std::extents<IdxT, Extents...>>;
 
 constexpr void test_no_implicit_conversion() {
   constexpr size_t D = std::dynamic_extent;
 
-  
   // Sanity check that one static to dyamic conversion works
-  static_assert(std::is_constructible_v<map_t<int, D>, map_t<int, 5>>, "");
-  static_assert(std::is_convertible_v<map_t<int, 5>, map_t<int, D>>, "");
+  static_assert(std::is_constructible_v<map_t<int, D>, map_t<int, 5>>);
+  static_assert(std::is_convertible_v<map_t<int, 5>, map_t<int, D>>);
 
   // Check that dynamic to static conversion only works explicitly
-  static_assert(std::is_constructible_v<map_t<int, 5>, map_t<int, D>>, "");
-  static_assert(!std::is_convertible_v<map_t<int, D>, map_t<int, 5>>, "");
+  static_assert(std::is_constructible_v<map_t<int, 5>, map_t<int, D>>);
+  static_assert(!std::is_convertible_v<map_t<int, D>, map_t<int, 5>>);
 
   // Sanity check that one static to dynamic conversion works
-  static_assert(std::is_constructible_v<map_t<int, D, 7>, map_t<int, 5, 7>>, "");
-  static_assert(std::is_convertible_v<map_t<int, 5, 7>, map_t<int, D, 7>>, "");
+  static_assert(std::is_constructible_v<map_t<int, D, 7>, map_t<int, 5, 7>>);
+  static_assert(std::is_convertible_v<map_t<int, 5, 7>, map_t<int, D, 7>>);
 
   // Check that dynamic to static conversion only works explicitly
-  static_assert(std::is_constructible_v<map_t<int, 5, 7>, map_t<int, D, 7>>, "");
-  static_assert(!std::is_convertible_v<map_t<int, D, 7>, map_t<int, 5, 7>>, "");
+  static_assert(std::is_constructible_v<map_t<int, 5, 7>, map_t<int, D, 7>>);
+  static_assert(!std::is_convertible_v<map_t<int, D, 7>, map_t<int, 5, 7>>);
 
   // Sanity check that smaller index_type to larger index_type conversion works
-  static_assert(std::is_constructible_v<map_t<size_t, 5>, map_t<int, 5>>, "");
-  static_assert(std::is_convertible_v<map_t<int, 5>, map_t<size_t, 5>>, "");
+  static_assert(std::is_constructible_v<map_t<size_t, 5>, map_t<int, 5>>);
+  static_assert(std::is_convertible_v<map_t<int, 5>, map_t<size_t, 5>>);
 
   // Check that larger index_type to smaller index_type conversion works explicitly only
-  static_assert(std::is_constructible_v<map_t<int, 5>, map_t<size_t, 5>>, "");
-  static_assert(!std::is_convertible_v<map_t<size_t, 5>, map_t<int, 5>>, "");
+  static_assert(std::is_constructible_v<map_t<int, 5>, map_t<size_t, 5>>);
+  static_assert(!std::is_convertible_v<map_t<size_t, 5>, map_t<int, 5>>);
 }
 
 constexpr void test_rank_mismatch() {
   constexpr size_t D = std::dynamic_extent;
 
-  static_assert(!std::is_constructible_v<map_t<int, D>, map_t<int>>, "");
-  static_assert(!std::is_constructible_v<map_t<int>, map_t<int, D, D>>, "");
-  static_assert(!std::is_constructible_v<map_t<int, D>, map_t<int, D, D>>, "");
-  static_assert(!std::is_constructible_v<map_t<int, D, D, D>, map_t<int, D, D>>, "");
+  static_assert(!std::is_constructible_v<map_t<int, D>, map_t<int>>);
+  static_assert(!std::is_constructible_v<map_t<int>, map_t<int, D, D>>);
+  static_assert(!std::is_constructible_v<map_t<int, D>, map_t<int, D, D>>);
+  static_assert(!std::is_constructible_v<map_t<int, D, D, D>, map_t<int, D, D>>);
 }
 
 constexpr void test_static_extent_mismatch() {
   constexpr size_t D = std::dynamic_extent;
 
-  static_assert(!std::is_constructible_v<map_t<int, D, 5>, map_t<int, D, 4>>, "");
-  static_assert(!std::is_constructible_v<map_t<int, 5>, map_t<int, 4>>, "");
-  static_assert(!std::is_constructible_v<map_t<int, 5, D>, map_t<int, 4, D>>, "");
+  static_assert(!std::is_constructible_v<map_t<int, D, 5>, map_t<int, D, 4>>);
+  static_assert(!std::is_constructible_v<map_t<int, 5>, map_t<int, 4>>);
+  static_assert(!std::is_constructible_v<map_t<int, 5, D>, map_t<int, 4, D>>);
 }
 
 constexpr bool test() {

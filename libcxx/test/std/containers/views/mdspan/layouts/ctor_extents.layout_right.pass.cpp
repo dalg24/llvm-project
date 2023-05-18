@@ -9,23 +9,16 @@
 
 // <mdspan>
 
-// Test default construction:
-//
-// constexpr extents() noexcept = default;
-//
-// Remarks: since the standard uses an exposition only array member, dynamic extents
-// need to be zero intialized!
+// constexpr mapping(const extents_type&) noexcept;
 
 #include <mdspan>
 #include <cassert>
-#include <array>
 
 #include "test_macros.h"
 
-template<class E, class ... Args>
-constexpr void test_construction(Args ... args) {
+template <class E>
+constexpr void test_construction(E e) {
   using M = std::layout_right::mapping<E>;
-  E e(args...);
   ASSERT_NOEXCEPT(M{e});
   M m(e);
 
@@ -34,18 +27,18 @@ constexpr void test_construction(Args ... args) {
 
   // check required_span_size()
   typename E::index_type expected_size = 1;
-  for(typename E::rank_type r = 0; r < E::rank(); r++)
+  for (typename E::rank_type r = 0; r < E::rank(); r++)
     expected_size *= e.extent(r);
   assert(m.required_span_size() == expected_size);
 }
 
 constexpr bool test() {
   constexpr size_t D = std::dynamic_extent;
-  test_construction<std::extents<int>>();
-  test_construction<std::extents<unsigned, D>>(7);
-  test_construction<std::extents<unsigned, 7>>();
-  test_construction<std::extents<unsigned, 7, 8>>();
-  test_construction<std::extents<int64_t, D, 8, D, D>>(7, 9, 10);
+  test_construction(std::extents<int>());
+  test_construction(std::extents<unsigned, D>(7));
+  test_construction(std::extents<unsigned, 7>());
+  test_construction(std::extents<unsigned, 7, 8>());
+  test_construction(std::extents<int64_t, D, 8, D, D>(7, 9, 10));
   return true;
 }
 
