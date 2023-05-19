@@ -45,6 +45,6 @@ int main() {
     // but the product is not, so we can't use it for layout_right
     TEST_LIBCPP_ASSERT_FAILURE(
         ([=] { std::layout_right::template mapping<std::extents<char, D, 5>> m(arg); }()),
-        "layout_right::mapping converting ctor: other.required_span_size() not representable in index_type.");
+        "layout_right::mapping converting ctor: other.required_span_size() must be representable as index_type.");
   }
 }

@@ -36,9 +36,7 @@ _LIBCPP_BEGIN_NAMESPACE_STD
 template <class _Extents>
 class layout_right::mapping {
   static_assert(__mdspan_detail::__is_extents<_Extents>::value,
-                "layout_right::mapping template argument must be a specialization of extents");
-
-  // For dynamic_rank()==0 check representability
+                "layout_right::mapping template argument must be a specialization of extents.");
 
 public:
   using extents_type = _Extents;
@@ -47,10 +45,32 @@ public:
   using rank_type    = typename extents_type::rank_type;
   using layout_type  = layout_right;
 
+private:
+  static constexpr bool __required_span_size_is_representable(extents_type __ext) {
+    if constexpr (extents_type::rank() == 0)
+      return true;
+
+    constexpr index_type __num_max = numeric_limits<index_type>::max();
+    index_type __prod              = __ext.extent(0);
+    for (rank_type r = 1; r < extents_type::rank(); r++) {
+      if (__prod > (__num_max / __ext.extent(r)))
+        return false;
+      __prod *= __ext.extent(r);
+    }
+    return true;
+  }
+
+  static_assert((extents_type::rank_dynamic() > 0) || __required_span_size_is_representable(extents_type()),
+                "layout_right::mapping product of static extents must be representable as index_type.");
+
+public:
   // [mdspan.layout.right.cons], constructors
   constexpr mapping() noexcept               = default;
   constexpr mapping(const mapping&) noexcept = default;
-  constexpr mapping(const extents_type& __ext) noexcept : __extents_(__ext) {}
+  constexpr mapping(const extents_type& __ext) noexcept : __extents_(__ext) {
+    _LIBCPP_ASSERT(__required_span_size_is_representable(__ext),
+                   "layout_right::mapping extents ctor: product of extents must be representable as index_type.");
+  }
 
   template <class _OtherExtents>
     requires(is_constructible_v<extents_type, _OtherExtents>)
