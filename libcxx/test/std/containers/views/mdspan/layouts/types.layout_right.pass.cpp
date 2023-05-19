@@ -41,7 +41,8 @@ void test_mapping_requirements(std::index_sequence<Idxs...>) {
   static_assert(std::is_same_v<decltype(std::declval<M>().is_unique()), bool>);
   static_assert(std::is_same_v<decltype(std::declval<M>().is_exhaustive()), bool>);
   static_assert(std::is_same_v<decltype(std::declval<M>().is_strided()), bool>);
-  static_assert(std::is_same_v<decltype(std::declval<M>().stride(0)), typename M::index_type>);
+  if constexpr (E::rank() > 0)
+    static_assert(std::is_same_v<decltype(std::declval<M>().stride(0)), typename M::index_type>);
   static_assert(std::is_same_v<decltype(M::is_always_unique()), bool>);
   static_assert(std::is_same_v<decltype(M::is_always_exhaustive()), bool>);
   static_assert(std::is_same_v<decltype(M::is_always_strided()), bool>);
@@ -70,7 +71,8 @@ void test_layout_mapping_right() {
   ASSERT_NOEXCEPT(std::declval<M>().is_unique());
   ASSERT_NOEXCEPT(std::declval<M>().is_exhaustive());
   ASSERT_NOEXCEPT(std::declval<M>().is_strided());
-  ASSERT_NOEXCEPT(std::declval<M>().stride(0));
+  if constexpr (E::rank() > 0)
+    ASSERT_NOEXCEPT(std::declval<M>().stride(0));
   ASSERT_NOEXCEPT(M::is_always_unique());
   ASSERT_NOEXCEPT(M::is_always_exhaustive());
   ASSERT_NOEXCEPT(M::is_always_strided());

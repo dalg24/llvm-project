@@ -154,7 +154,7 @@ public:
   static constexpr bool is_exhaustive() noexcept { return true; }
   static constexpr bool is_strided() noexcept { return true; }
 
-  constexpr index_type stride(rank_type __r) const noexcept {
+  constexpr index_type stride(rank_type __r) const noexcept requires(extents_type::rank() > 0) {
     _LIBCPP_ASSERT(__r < extents_type::rank(), "layout_right::mapping::stride(): invalid rank index");
     if constexpr (extents_type::rank() > 0) {
       index_type __s = 1;
