@@ -11,17 +11,15 @@
 
 // <mdspan>
 
-// layout_right::mapping
+// template<class... Indices>
+//   constexpr index_type operator()(Indices... i) const noexcept;
 //
-// constexpr index_type stride(rank_type i) const noexcept;
-//   
-//   Constraints: extents_type::rank() > 0 is true.
+// Constraints:
+//   - sizeof...(Indices) == extents_type​::​rank() is true,
+//   - (is_convertible_v<Indices, index_type> && ...) is true, and
+//   - (is_nothrow_constructible_v<index_type, Indices> && ...) is true.
 //
-//   Preconditions: i < extents_type::rank() is true.
-//
-//   Returns: extents().rev-prod-of-extents(i).
-//
-// 
+// Preconditions: extents_type::index-cast(i) is a multidimensional index in extents_ ([mdspan.overview]).
 
 #include <mdspan>
 #include <cassert>
