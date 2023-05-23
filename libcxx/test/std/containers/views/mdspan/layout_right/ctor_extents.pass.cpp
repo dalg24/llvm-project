@@ -29,12 +29,14 @@ constexpr void test_construction(E e) {
   M m(e);
 
   // check correct extents are returned
+  ASSERT_NOEXCEPT(m.extents());
   assert(m.extents() == e);
 
   // check required_span_size()
   typename E::index_type expected_size = 1;
   for (typename E::rank_type r = 0; r < E::rank(); r++)
     expected_size *= e.extent(r);
+  ASSERT_NOEXCEPT(m.required_span_size());
   assert(m.required_span_size() == expected_size);
 }
 

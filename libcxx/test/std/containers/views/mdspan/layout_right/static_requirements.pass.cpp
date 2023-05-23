@@ -9,14 +9,6 @@
 
 // <mdspan>
 
-
-#include <mdspan>
-#include <type_traits>
-#include <concepts>
-#include <cassert>
-
-#include "test_macros.h"
-
 // A type M meets the layout mapping requirements if
 //    - M models copyable and equality_comparable,
 //    - is_nothrow_move_constructible_v<M> is true,
@@ -82,6 +74,14 @@
 //  M::is_always_strided()
 //    Result: A constant expression ([expr.const]) of type bool.
 //    Returns: true only if m.is_strided() is true for all possible objects m of type M.
+
+
+#include <mdspan>
+#include <type_traits>
+#include <concepts>
+#include <cassert>
+
+#include "test_macros.h"
 
 // Common requirements of all layout mappings
 template <class M, size_t... Idxs>

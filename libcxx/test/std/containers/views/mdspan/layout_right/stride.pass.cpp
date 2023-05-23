@@ -30,6 +30,7 @@ constexpr void test_stride(std::array<typename E::index_type, E::rank()> strides
   using M = std::layout_right::mapping<E>;
   M m(E(args...));
 
+  ASSERT_NOEXCEPT(m.stride(0));
   for (size_t r = 0; r < E::rank(); r++)
     assert(strides[r] == m.stride(r));
 }
