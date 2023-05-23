@@ -166,6 +166,7 @@ public:
   }
 
   template <class _OtherExtents>
+    requires(_OtherExtents::rank() == extents_type::rank())
   friend constexpr bool operator==(const mapping& __lhs, const mapping<_OtherExtents>& __rhs) noexcept {
     return __lhs.extents() == __rhs.extents();
   }

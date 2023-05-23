@@ -30,24 +30,42 @@ constexpr void test_comparison(bool equal, To dest_exts, From src_exts) {
   assert((dest != src) == !equal);
 }
 
-// FIXME the standard says comparison it is constrained so I expect we should test you can't compare them rather than they compare not equal
+struct X {
+  constexpr bool does_not_match() { return true; }
+};
+
+constexpr X compare_layout_mappings(...) { return {}; }
+
+template <class E1, class E2>
+constexpr auto compare_layout_mappings(E1 e1, E2 e2)
+    -> decltype(std::layout_right::mapping<E1>(e1) == std::layout_right::mapping<E2>(e2)) {
+  return true;
+}
+
 template <class T1, class T2>
 constexpr void test_comparison_different_rank() {
   constexpr size_t D = std::dynamic_extent;
 
-  test_comparison(false, std::extents<T1>(), std::extents<T2, D>(1));
-  test_comparison(false, std::extents<T1>(), std::extents<T2, 1>());
+  // sanity check same rank
+  static_assert(compare_layout_mappings(std::extents<T1, D>(5), std::extents<T2, D>(5)));
+  static_assert(compare_layout_mappings(std::extents<T1, 5>(), std::extents<T2, D>(5)));
+  static_assert(compare_layout_mappings(std::extents<T1, D>(5), std::extents<T2, 5>()));
+  static_assert(compare_layout_mappings(std::extents<T1, 5>(), std::extents<T2, 5>()));
 
-  test_comparison(false, std::extents<T1, D>(1), std::extents<T2>());
-  test_comparison(false, std::extents<T1, 1>(), std::extents<T2>());
+  // not equality comparable when rank is not the same
+  static_assert(compare_layout_mappings(std::extents<T1>(), std::extents<T2, D>(1)).does_not_match());
+  static_assert(compare_layout_mappings(std::extents<T1>(), std::extents<T2, 1>()).does_not_match());
 
-  test_comparison(false, std::extents<T1, D>(5), std::extents<T2, D, D>(5, 5));
-  test_comparison(false, std::extents<T1, 5>(), std::extents<T2, 5, D>(5));
-  test_comparison(false, std::extents<T1, 5>(), std::extents<T2, 5, 1>());
+  static_assert(compare_layout_mappings(std::extents<T1, D>(1), std::extents<T2>()).does_not_match());
+  static_assert(compare_layout_mappings(std::extents<T1, 1>(), std::extents<T2>()).does_not_match());
 
-  test_comparison(false, std::extents<T1, D, D>(5, 5), std::extents<T2, D>(5));
-  test_comparison(false, std::extents<T1, 5, D>(5), std::extents<T2, D>(5));
-  test_comparison(false, std::extents<T1, 5, 5>(), std::extents<T2, 5>());
+  static_assert(compare_layout_mappings(std::extents<T1, D>(5), std::extents<T2, D, D>(5, 5)).does_not_match());
+  static_assert(compare_layout_mappings(std::extents<T1, 5>(), std::extents<T2, 5, D>(5)).does_not_match());
+  static_assert(compare_layout_mappings(std::extents<T1, 5>(), std::extents<T2, 5, 1>()).does_not_match());
+
+  static_assert(compare_layout_mappings(std::extents<T1, D, D>(5, 5), std::extents<T2, D>(5)).does_not_match());
+  static_assert(compare_layout_mappings(std::extents<T1, 5, D>(5), std::extents<T2, D>(5)).does_not_match());
+  static_assert(compare_layout_mappings(std::extents<T1, 5, 5>(), std::extents<T2, 5>()).does_not_match());
 }
 
 template <class T1, class T2>
