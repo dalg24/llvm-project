@@ -15,7 +15,7 @@
 //   constexpr index_type operator()(Indices... i) const noexcept;
 //
 // Constraints:
-//   - sizeof...(Indices) == extents_type​::​rank() is true,
+//   - sizeof...(Indices) == extents_type::rank() is true,
 //   - (is_convertible_v<Indices, index_type> && ...) is true, and
 //   - (is_nothrow_constructible_v<index_type, Indices> && ...) is true.
 //

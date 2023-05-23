@@ -14,14 +14,14 @@
 // layout_right::mapping
 //
 // constexpr index_type stride(rank_type i) const noexcept;
-//   
+//
 //   Constraints: extents_type::rank() > 0 is true.
 //
 //   Preconditions: i < extents_type::rank() is true.
 //
 //   Returns: extents().rev-prod-of-extents(i).
 //
-// 
+//
 
 #include <mdspan>
 #include <cassert>

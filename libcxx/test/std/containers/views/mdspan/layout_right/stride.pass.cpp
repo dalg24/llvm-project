@@ -9,12 +9,14 @@
 
 // <mdspan>
 
-// Test default iteration:
+// constexpr index_type stride(rank_type i) const noexcept;
 //
-// constexpr extents() noexcept = default;
+//   Constraints: extents_type::rank() > 0 is true.
 //
-// Remarks: since the standard uses an exposition only array member, dynamic extents
-// need to be zero intialized!
+//   Preconditions: i < extents_type::rank() is true.
+//
+//   Returns: extents().rev-prod-of-extents(i).
+
 
 #include <mdspan>
 #include <cassert>

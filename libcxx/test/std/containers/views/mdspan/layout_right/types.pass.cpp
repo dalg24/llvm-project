@@ -17,6 +17,9 @@
 //    using size_type = typename extents_type::size_type;
 //    using rank_type = typename extents_type::rank_type;
 //    using layout_type = layout_right;
+//    ...
+//  };
+//
 
 #include <mdspan>
 #include <type_traits>

@@ -10,6 +10,11 @@
 // <mdspan>
 
 // constexpr mapping(const extents_type&) noexcept;
+//
+// Preconditions: The size of the multidimensional index space e is representable
+//                as a value of type index_type ([basic.fundamental]).
+//
+// Effects: Direct-non-list-initializes extents_ with e.
 
 #include <mdspan>
 #include <cassert>
