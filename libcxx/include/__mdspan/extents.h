@@ -478,12 +478,12 @@ _LIBCPP_HIDE_FROM_ABI constexpr bool __is_multidimensional_index_in(_IndexType _
 template <size_t... _Idxs, class _Extents, class... _From>
 _LIBCPP_HIDE_FROM_ABI constexpr bool
 __is_multidimensional_index_in(index_sequence<_Idxs...>, _Extents __ext, _From... __values) {
-  return (__is_multidimensional_index_in(__ext.extent(_Idxs), __values) && ...);
+  return (__mdspan_detail::__is_multidimensional_index_in(__ext.extent(_Idxs), __values) && ...);
 }
 
 template <class _Extents, class... _From>
 _LIBCPP_HIDE_FROM_ABI constexpr bool __is_multidimensional_index_in(_Extents __ext, _From... __values) {
-  return __is_multidimensional_index_in(make_index_sequence<_Extents::rank()>(), __ext, __values...);
+  return __mdspan_detail::__is_multidimensional_index_in(make_index_sequence<_Extents::rank()>(), __ext, __values...);
 }
 
 } // namespace __mdspan_detail

@@ -15,6 +15,7 @@
 
 #include <mdspan>
 #include <cassert>
+#include <cstdint>
 
 #include "test_macros.h"
 
