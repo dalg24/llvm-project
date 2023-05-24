@@ -11,7 +11,7 @@
 
 // Overall mdspan synopsis
 
-mespace std {
+namespace std {
   // [mdspan.extents], class template extents
   template<class IndexType, size_t... Extents>
     class extents;
