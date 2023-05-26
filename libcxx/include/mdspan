@@ -143,7 +143,8 @@ namespace std {
 
 #include <__config>
 #include <__mdspan/extents.h>
-#include <__mdspan/layout_right_mapping.h>
+#include <__fwd/mdspan_layouts.h>
+#include <__mdspan/layout_right.h>
 
 #if !defined(_LIBCPP_HAS_NO_PRAGMA_SYSTEM_HEADER)
 #  pragma GCC system_header
