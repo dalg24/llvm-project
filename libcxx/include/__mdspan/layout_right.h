@@ -112,46 +112,18 @@ public:
     return __size;
   }
 
-private:
-  // Helper functions to compute the offset
-  // 3D: ((i0 * E1 + i1)*E2 + i2)*E3 + i3
-  // This is not directly doable as a fold expression, so use recursive functions here
-
-  // Helper struct to count recursion depth and when to stop
-  template <size_t _Rp, size_t _Rank>
-  struct __rank_count {};
-
-  // don't start: Rank-0
-  _LIBCPP_HIDE_FROM_ABI constexpr index_type __compute_offset(__rank_count<0, 0>) const { return 0; }
-
-  // start of recursion
-  template <class _Ip, class... _Indices>
-  _LIBCPP_HIDE_FROM_ABI constexpr index_type
-  __compute_offset(__rank_count<0, extents_type::rank()>, const _Ip& __i, _Indices... __idx) const {
-    return __compute_offset(__i, __rank_count<1, extents_type::rank()>(), __idx...);
-  }
-
-  // continue recursion
-  template <size_t _Rp, size_t _Rank, class _Ip, class... _Indices>
-  _LIBCPP_HIDE_FROM_ABI constexpr index_type
-  __compute_offset(index_type __offset, __rank_count<_Rp, _Rank>, const _Ip& __i, _Indices... __idx) const {
-    return __compute_offset(__offset * __extents_.extent(_Rp) + __i, __rank_count<_Rp + 1, _Rank>(), __idx...);
-  }
-
-  // end of recursion
-  _LIBCPP_HIDE_FROM_ABI constexpr index_type
-  __compute_offset(index_type __offset, __rank_count<extents_type::rank(), extents_type::rank()>) const {
-    return static_cast<index_type>(__offset);
-  }
-
-public:
   template <class... _Indices>
     requires((sizeof...(_Indices) == extents_type::rank()) && (is_convertible_v<_Indices, index_type> && ...) &&
              (is_nothrow_constructible_v<index_type, _Indices> && ...))
   _LIBCPP_HIDE_FROM_ABI constexpr index_type operator()(_Indices... __idx) const noexcept {
     _LIBCPP_ASSERT(__mdspan_detail::__is_multidimensional_index_in(__extents_, __idx...),
                    "layout_right::mapping: out of bounds indexing");
-    return __compute_offset(__rank_count<0, extents_type::rank()>(), static_cast<index_type>(__idx)...);
+    return [&]<size_t... _Pos>(index_sequence<_Pos...>) {
+      index_type __res = 0;
+      ((__res = static_cast<index_type>(__idx) + __extents_.extent(_Pos) * __res), ...);
+      return __res;
+    }
+    (make_index_sequence<sizeof...(_Indices)>());
   }
 
   _LIBCPP_HIDE_FROM_ABI static constexpr bool is_always_unique() noexcept { return true; }
