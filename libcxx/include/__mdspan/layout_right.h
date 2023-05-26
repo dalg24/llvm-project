@@ -25,7 +25,6 @@
 #include <__type_traits/is_convertible.h>
 #include <__type_traits/is_nothrow_constructible.h>
 #include <__utility/integer_sequence.h>
-#include <__utility/unreachable.h>
 #include <cinttypes>
 #include <cstddef>
 #include <limits>
@@ -163,17 +162,12 @@ public:
   _LIBCPP_HIDE_FROM_ABI static constexpr bool is_exhaustive() noexcept { return true; }
   _LIBCPP_HIDE_FROM_ABI static constexpr bool is_strided() noexcept { return true; }
 
-  _LIBCPP_HIDE_FROM_ABI constexpr index_type stride(rank_type __r) const noexcept
-    requires(extents_type::rank() > 0)
-  {
+  _LIBCPP_HIDE_FROM_ABI constexpr index_type stride(rank_type __r) const noexcept requires(extents_type::rank() > 0) {
     _LIBCPP_ASSERT(__r < extents_type::rank(), "layout_right::mapping::stride(): invalid rank index");
-    if constexpr (extents_type::rank() > 0) {
-      index_type __s = 1;
-      for (rank_type __i = extents_type::rank() - 1; __i > __r; __i--)
-        __s *= __extents_.extent(__i);
-      return __s;
-    }
-    __libcpp_unreachable();
+    index_type __s = 1;
+    for (rank_type __i = extents_type::rank() - 1; __i > __r; __i--)
+      __s *= __extents_.extent(__i);
+    return __s;
   }
 
   template <class _OtherExtents>
