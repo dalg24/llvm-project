@@ -33,15 +33,14 @@
 #include "test_macros.h"
 
 template <class E>
-void test_layout_mapping_right() {
+constexpr void test_layout_mapping_right() {
   using M = std::layout_right::template mapping<E>;
-  static_assert(M::is_unique() == true);
-  static_assert(M::is_exhaustive() == true);
-  static_assert(M::is_strided() == true);
-  static_assert(M::is_always_unique() == true);
-  static_assert(M::is_always_exhaustive() == true);
-  static_assert(M::is_always_strided() == true);
-
+  assert(M::is_unique() == true);
+  assert(M::is_exhaustive() == true);
+  assert(M::is_strided() == true);
+  assert(M::is_always_unique() == true);
+  assert(M::is_always_exhaustive() == true);
+  assert(M::is_always_strided() == true);
   ASSERT_NOEXCEPT(std::declval<M>().is_unique());
   ASSERT_NOEXCEPT(std::declval<M>().is_exhaustive());
   ASSERT_NOEXCEPT(std::declval<M>().is_strided());
@@ -50,10 +49,17 @@ void test_layout_mapping_right() {
   ASSERT_NOEXCEPT(M::is_always_strided());
 }
 
-int main() {
+constexpr bool test() {
   constexpr size_t D = std::dynamic_extent;
   test_layout_mapping_right<std::extents<int>>();
   test_layout_mapping_right<std::extents<char, 4, 5>>();
   test_layout_mapping_right<std::extents<unsigned, D, 4>>();
   test_layout_mapping_right<std::extents<size_t, D, D, D, D>>();
+  return true;
+}
+
+int main(int, char**) {
+  test();
+  static_assert(test());
+  return 0;
 }
