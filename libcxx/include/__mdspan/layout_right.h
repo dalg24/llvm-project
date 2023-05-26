@@ -53,7 +53,7 @@ public:
   using layout_type  = layout_right;
 
 private:
-  _LIBCPP_HIDE_FROM_ABI static constexpr bool __required_span_size_is_representable(extents_type __ext) {
+  _LIBCPP_HIDE_FROM_ABI static constexpr bool __required_span_size_is_representable(const extents_type& __ext) {
     if constexpr (extents_type::rank() == 0)
       return true;
 
