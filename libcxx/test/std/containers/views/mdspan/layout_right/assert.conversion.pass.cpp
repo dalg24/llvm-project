@@ -24,7 +24,7 @@
 
 #include "check_assertion.h"
 
-int main() {
+int main(int, char**) {
   constexpr size_t D = std::dynamic_extent;
   std::extents<int, D, D> arg_exts{100, 5};
   std::layout_right::mapping<std::extents<int, D, D>> arg(arg_exts);
@@ -47,4 +47,5 @@ int main() {
         ([=] { std::layout_right::template mapping<std::extents<char, D, 5>> m(arg); }()),
         "layout_right::mapping converting ctor: other.required_span_size() must be representable as index_type.");
   }
+  return 0;
 }

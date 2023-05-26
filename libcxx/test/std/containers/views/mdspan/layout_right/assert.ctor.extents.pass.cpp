@@ -23,7 +23,7 @@
 
 #include "check_assertion.h"
 
-int main() {
+int main(int, char**) {
   constexpr size_t D = std::dynamic_extent;
 
   // value out of range
@@ -33,4 +33,5 @@ int main() {
         ([=] { std::layout_right::template mapping<std::extents<char, D, 5>> m(std::extents<char, D, 5>(100)); }()),
         "layout_right::mapping extents ctor: product of extents must be representable as index_type.");
   }
+  return 0;
 }

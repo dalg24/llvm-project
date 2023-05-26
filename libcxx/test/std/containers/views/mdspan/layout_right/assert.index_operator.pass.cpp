@@ -26,7 +26,7 @@
 
 #include "check_assertion.h"
 
-int main() {
+int main(int, char**) {
   // value out of range
   {
     std::layout_right::template mapping<std::extents<unsigned char, 5>> m;
@@ -78,4 +78,5 @@ int main() {
     TEST_LIBCPP_ASSERT_FAILURE(m(3, 3, 9), "layout_right::mapping: out of bounds indexing");
     TEST_LIBCPP_ASSERT_FAILURE(m(5, 7, 9), "layout_right::mapping: out of bounds indexing");
   }
+  return 0;
 }

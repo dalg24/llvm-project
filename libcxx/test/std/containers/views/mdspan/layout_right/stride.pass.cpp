@@ -17,7 +17,6 @@
 //
 //   Returns: extents().rev-prod-of-extents(i).
 
-
 #include <mdspan>
 #include <cassert>
 #include <array>
@@ -44,7 +43,8 @@ constexpr bool test() {
   return true;
 }
 
-int main() {
+int main(int, char**) {
   test();
   static_assert(test());
+  return 0;
 }
