@@ -475,14 +475,11 @@ _LIBCPP_HIDE_FROM_ABI constexpr bool __is_index_in_extent(_IndexType __extent, _
   return static_cast<_IndexType>(__value) < __extent;
 }
 
-template <size_t... _Idxs, class _Extents, class... _From>
-_LIBCPP_HIDE_FROM_ABI constexpr bool __is_index_in_extent(index_sequence<_Idxs...>, _Extents __ext, _From... __values) {
-  return (__mdspan_detail::__is_index_in_extent(__ext.extent(_Idxs), __values) && ...);
-}
-
 template <class _Extents, class... _From>
 _LIBCPP_HIDE_FROM_ABI constexpr bool __is_index_in_extent(_Extents __ext, _From... __values) {
-  return __mdspan_detail::__is_index_in_extent(make_index_sequence<_Extents::rank()>(), __ext, __values...);
+  return [&]<size_t... _Idxs>(index_sequence<_Idxs...>) {
+    return (__mdspan_detail::__is_index_in_extent(__ext.extent(_Idxs), __values) && ...);
+  }(make_index_sequence<_Extents::rank()>());
 }
 
 } // namespace __mdspan_detail
