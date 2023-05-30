@@ -57,12 +57,11 @@ private:
     if constexpr (extents_type::rank() == 0)
       return true;
 
-    constexpr index_type __num_max = numeric_limits<index_type>::max();
-    index_type __prod              = __ext.extent(0);
+    index_type __prod = __ext.extent(0);
     for (rank_type __r = 1; __r < extents_type::rank(); __r++) {
-      if (__prod > (__num_max / __ext.extent(__r)))
+      bool __overflowed = __builtin_mul_overflow(__prod, __ext.extent(__r), &__prod);
+      if (__overflowed)
         return false;
-      __prod *= __ext.extent(__r);
     }
     return true;
   }
