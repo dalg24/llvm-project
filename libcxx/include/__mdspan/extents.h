@@ -315,7 +315,7 @@ public:
   }
 
   template <class _OtherIndexType, size_t _Size>
-    requires(is_convertible_v<_OtherIndexType, index_type> && is_nothrow_constructible_v<index_type, _OtherIndexType> &&
+    requires(is_convertible_v<_OtherIndexType, index_type>&& is_nothrow_constructible_v<index_type, _OtherIndexType> &&
              (_Size == __rank_ || _Size == __rank_dynamic_))
   explicit(_Size != __rank_dynamic_)
       _LIBCPP_HIDE_FROM_ABI constexpr extents(const array<_OtherIndexType, _Size>& __exts) noexcept
@@ -325,7 +325,7 @@ public:
   }
 
   template <class _OtherIndexType, size_t _Size>
-    requires(is_convertible_v<_OtherIndexType, index_type> && is_nothrow_constructible_v<index_type, _OtherIndexType> &&
+    requires(is_convertible_v<_OtherIndexType, index_type>&& is_nothrow_constructible_v<index_type, _OtherIndexType> &&
              (_Size == __rank_ || _Size == __rank_dynamic_))
   explicit(_Size != __rank_dynamic_)
       _LIBCPP_HIDE_FROM_ABI constexpr extents(const span<_OtherIndexType, _Size>& __exts) noexcept
@@ -476,10 +476,11 @@ _LIBCPP_HIDE_FROM_ABI constexpr bool __is_index_in_extent(_IndexType __extent, _
 }
 
 template <class _Extents, class... _From>
-_LIBCPP_HIDE_FROM_ABI constexpr bool __is_index_in_extent(_Extents __ext, _From... __values) {
+_LIBCPP_HIDE_FROM_ABI constexpr bool __is_multidimensional_index_in(_Extents __ext, _From... __values) {
   return [&]<size_t... _Idxs>(index_sequence<_Idxs...>) {
     return (__mdspan_detail::__is_index_in_extent(__ext.extent(_Idxs), __values) && ...);
-  }(make_index_sequence<_Extents::rank()>());
+  }
+  (make_index_sequence<_Extents::rank()>());
 }
 
 } // namespace __mdspan_detail

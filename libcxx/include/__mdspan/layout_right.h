@@ -115,8 +115,8 @@ public:
     requires((sizeof...(_Indices) == extents_type::rank()) && (is_convertible_v<_Indices, index_type> && ...) &&
              (is_nothrow_constructible_v<index_type, _Indices> && ...))
   _LIBCPP_HIDE_FROM_ABI constexpr index_type operator()(_Indices... __idx) const noexcept {
-    _LIBCPP_ASSERT(
-        __mdspan_detail::__is_index_in_extent(__extents_, __idx...), "layout_right::mapping: out of bounds indexing");
+    _LIBCPP_ASSERT(__mdspan_detail::__is_multidimensional_index_in(__extents_, __idx...),
+                   "layout_right::mapping: out of bounds indexing");
     return [&]<size_t... _Pos>(index_sequence<_Pos...>) {
       index_type __res = 0;
       ((__res = static_cast<index_type>(__idx) + __extents_.extent(_Pos) * __res), ...);
