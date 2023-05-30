@@ -418,7 +418,7 @@ set(files
   __fwd/hash.h
   __fwd/ios.h
   __fwd/istream.h
-  __fwd/mdspan_layouts.h
+  __fwd/mdspan.h
   __fwd/memory_resource.h
   __fwd/ostream.h
   __fwd/pair.h

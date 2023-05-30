@@ -1173,9 +1173,9 @@ module std [system] {
     export *
 
     module __mdspan {
+      module mdspan_fwd                      { private header "__fwd/mdspan.h" }
       module extents                         { private header "__mdspan/extents.h" }
       module layout_right                    { private header "__mdspan/layout_right.h" }
-      module layouts_fwd                     { private header "__fwd/mdspan_layouts.h" }
     }
   }
   module memory {
