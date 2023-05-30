@@ -456,7 +456,7 @@ inline constexpr bool __is_extents_v = __is_extents<_Tp>::value;
 
 template <integral _IndexType, class _From>
   requires(is_integral_v<_From>)
-_LIBCPP_HIDE_FROM_ABI constexpr bool __is_multidimensional_index_in(_IndexType __extent, _From __value) {
+_LIBCPP_HIDE_FROM_ABI constexpr bool __is_index_in_extent(_IndexType __extent, _From __value) {
   if constexpr (is_signed_v<_From>) {
     if (__value < 0)
       return false;
@@ -467,7 +467,7 @@ _LIBCPP_HIDE_FROM_ABI constexpr bool __is_multidimensional_index_in(_IndexType _
 
 template <integral _IndexType, class _From>
   requires(!is_integral_v<_From>)
-_LIBCPP_HIDE_FROM_ABI constexpr bool __is_multidimensional_index_in(_IndexType __extent, _From __value) {
+_LIBCPP_HIDE_FROM_ABI constexpr bool __is_index_in_extent(_IndexType __extent, _From __value) {
   if constexpr (is_signed_v<_IndexType>) {
     if (static_cast<_IndexType>(__value) < 0)
       return false;
@@ -476,14 +476,13 @@ _LIBCPP_HIDE_FROM_ABI constexpr bool __is_multidimensional_index_in(_IndexType _
 }
 
 template <size_t... _Idxs, class _Extents, class... _From>
-_LIBCPP_HIDE_FROM_ABI constexpr bool
-__is_multidimensional_index_in(index_sequence<_Idxs...>, _Extents __ext, _From... __values) {
-  return (__mdspan_detail::__is_multidimensional_index_in(__ext.extent(_Idxs), __values) && ...);
+_LIBCPP_HIDE_FROM_ABI constexpr bool __is_index_in_extent(index_sequence<_Idxs...>, _Extents __ext, _From... __values) {
+  return (__mdspan_detail::__is_index_in_extent(__ext.extent(_Idxs), __values) && ...);
 }
 
 template <class _Extents, class... _From>
-_LIBCPP_HIDE_FROM_ABI constexpr bool __is_multidimensional_index_in(_Extents __ext, _From... __values) {
-  return __mdspan_detail::__is_multidimensional_index_in(make_index_sequence<_Extents::rank()>(), __ext, __values...);
+_LIBCPP_HIDE_FROM_ABI constexpr bool __is_index_in_extent(_Extents __ext, _From... __values) {
+  return __mdspan_detail::__is_index_in_extent(make_index_sequence<_Extents::rank()>(), __ext, __values...);
 }
 
 } // namespace __mdspan_detail
