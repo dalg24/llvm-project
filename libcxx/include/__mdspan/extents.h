@@ -449,7 +449,7 @@ struct __is_extents<extents<_IndexType, _ExtentsPack...>> : true_type {};
 template <class _Tp>
 inline constexpr bool __is_extents_v = __is_extents<_Tp>::value;
 
-// Function to check whether a set of indicies are a multidimensional
+// Function to check whether a set of indices are a multidimensional
 // index into extents. This is a word of power in the C++ standard
 // requiring that the indices are larger than 0 and smaller than
 // the respective extents.
