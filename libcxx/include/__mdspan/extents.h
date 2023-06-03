@@ -475,12 +475,15 @@ _LIBCPP_HIDE_FROM_ABI constexpr bool __is_index_in_extent(_IndexType __extent, _
   return static_cast<_IndexType>(__value) < __extent;
 }
 
+template <size_t... _Idxs, class _Extents, class... _From>
+_LIBCPP_HIDE_FROM_ABI constexpr bool
+__is_multidimensional_index_in_impl(index_sequence<_Idxs...>, const _Extents& __ext, _From... __values) {
+  return (__mdspan_detail::__is_index_in_extent(__ext.extent(_Idxs), __values) && ...);
+}
+
 template <class _Extents, class... _From>
-_LIBCPP_HIDE_FROM_ABI constexpr bool __is_multidimensional_index_in(_Extents __ext, _From... __values) {
-  return [&]<size_t... _Idxs>(index_sequence<_Idxs...>) {
-    return (__mdspan_detail::__is_index_in_extent(__ext.extent(_Idxs), __values) && ...);
-  }
-  (make_index_sequence<_Extents::rank()>());
+_LIBCPP_HIDE_FROM_ABI constexpr bool __is_multidimensional_index_in(const _Extents& __ext, _From... __values) {
+  return __is_multidimensional_index_in_impl(make_index_sequence<_Extents::rank()>(), __ext, __values...);
 }
 
 } // namespace __mdspan_detail
