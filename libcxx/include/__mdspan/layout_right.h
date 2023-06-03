@@ -43,17 +43,33 @@ _LIBCPP_BEGIN_NAMESPACE_STD
 template <class _Extents>
 class layout_right::mapping {
 public:
+  static_assert(__mdspan_detail::__is_extents<_Extents>::value,
+                "layout_right::mapping template argument must be a specialization of extents.");
+
   using extents_type = _Extents;
   using index_type   = typename extents_type::index_type;
   using size_type    = typename extents_type::size_type;
   using rank_type    = typename extents_type::rank_type;
   using layout_type  = layout_right;
 
-  static_assert(__mdspan_detail::__is_extents<_Extents>::value,
-                "layout_right::mapping template argument must be a specialization of extents.");
+private:
+  _LIBCPP_HIDE_FROM_ABI static constexpr bool __required_span_size_is_representable(const extents_type& __ext) {
+    if constexpr (extents_type::rank() == 0)
+      return true;
+
+    index_type __prod = __ext.extent(0);
+    for (rank_type __r = 1; __r < extents_type::rank(); __r++) {
+      bool __overflowed = __builtin_mul_overflow(__prod, __ext.extent(__r), &__prod);
+      if (__overflowed)
+        return false;
+    }
+    return true;
+  }
+
   static_assert((extents_type::rank_dynamic() > 0) || __required_span_size_is_representable(extents_type()),
                 "layout_right::mapping product of static extents must be representable as index_type.");
 
+public:
   // [mdspan.layout.right.cons], constructors
   _LIBCPP_HIDE_FROM_ABI constexpr mapping() noexcept               = default;
   _LIBCPP_HIDE_FROM_ABI constexpr mapping(const mapping&) noexcept = default;
@@ -135,19 +151,6 @@ public:
 
 private:
   extents_type __extents_{}; // exposition only
-
-  _LIBCPP_HIDE_FROM_ABI static constexpr bool __required_span_size_is_representable(const extents_type& __ext) {
-    if constexpr (extents_type::rank() == 0)
-      return true;
-
-    index_type __prod = __ext.extent(0);
-    for (rank_type __r = 1; __r < extents_type::rank(); __r++) {
-      bool __overflowed = __builtin_mul_overflow(__prod, __ext.extent(__r), &__prod);
-      if (__overflowed)
-        return false;
-    }
-    return true;
-  }
 };
 
 #endif // _LIBCPP_STD_VER >= 23
