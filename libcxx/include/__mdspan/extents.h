@@ -220,7 +220,7 @@ public:
 // value must be a positive integer otherwise returns false
 // if _From is not an integral, we just check positivity
 template <integral _To, class _From>
-  requires(is_integral_v<_From>)
+  requires(integral<_From>)
 _LIBCPP_HIDE_FROM_ABI constexpr bool __is_representable_as(_From __value) {
   using _To_u   = make_unsigned_t<_To>;
   using _From_u = make_unsigned_t<_From>;
@@ -236,7 +236,7 @@ _LIBCPP_HIDE_FROM_ABI constexpr bool __is_representable_as(_From __value) {
 }
 
 template <integral _To, class _From>
-  requires(!is_integral_v<_From>)
+  requires(!integral<_From>)
 _LIBCPP_HIDE_FROM_ABI constexpr bool __is_representable_as(_From __value) {
   if constexpr (is_signed_v<_To>) {
     if (static_cast<_To>(__value) < 0)
@@ -455,7 +455,7 @@ inline constexpr bool __is_extents_v = __is_extents<_Tp>::value;
 // the respective extents.
 
 template <integral _IndexType, class _From>
-  requires(is_integral_v<_From>)
+  requires(integral<_From>)
 _LIBCPP_HIDE_FROM_ABI constexpr bool __is_index_in_extent(_IndexType __extent, _From __value) {
   if constexpr (is_signed_v<_From>) {
     if (__value < 0)
@@ -466,7 +466,7 @@ _LIBCPP_HIDE_FROM_ABI constexpr bool __is_index_in_extent(_IndexType __extent, _
 }
 
 template <integral _IndexType, class _From>
-  requires(!is_integral_v<_From>)
+  requires(!integral<_From>)
 _LIBCPP_HIDE_FROM_ABI constexpr bool __is_index_in_extent(_IndexType __extent, _From __value) {
   if constexpr (is_signed_v<_IndexType>) {
     if (static_cast<_IndexType>(__value) < 0)
