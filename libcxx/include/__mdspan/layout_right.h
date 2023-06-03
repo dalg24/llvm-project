@@ -14,8 +14,8 @@
 //
 //===---------------------------------------------------------------------===//
 
-#ifndef _LIBCPP___MDSPAN_LAYOUT_RIGHT_MAPPING_H
-#define _LIBCPP___MDSPAN_LAYOUT_RIGHT_MAPPING_H
+#ifndef _LIBCPP___MDSPAN_LAYOUT_RIGHT_H
+#define _LIBCPP___MDSPAN_LAYOUT_RIGHT_H
 
 #include <__assert>
 #include <__config>
@@ -42,9 +42,6 @@ _LIBCPP_BEGIN_NAMESPACE_STD
 
 template <class _Extents>
 class layout_right::mapping {
-  static_assert(__mdspan_detail::__is_extents<_Extents>::value,
-                "layout_right::mapping template argument must be a specialization of extents.");
-
 public:
   using extents_type = _Extents;
   using index_type   = typename extents_type::index_type;
@@ -52,24 +49,11 @@ public:
   using rank_type    = typename extents_type::rank_type;
   using layout_type  = layout_right;
 
-private:
-  _LIBCPP_HIDE_FROM_ABI static constexpr bool __required_span_size_is_representable(const extents_type& __ext) {
-    if constexpr (extents_type::rank() == 0)
-      return true;
-
-    index_type __prod = __ext.extent(0);
-    for (rank_type __r = 1; __r < extents_type::rank(); __r++) {
-      bool __overflowed = __builtin_mul_overflow(__prod, __ext.extent(__r), &__prod);
-      if (__overflowed)
-        return false;
-    }
-    return true;
-  }
-
+  static_assert(__mdspan_detail::__is_extents<_Extents>::value,
+                "layout_right::mapping template argument must be a specialization of extents.");
   static_assert((extents_type::rank_dynamic() > 0) || __required_span_size_is_representable(extents_type()),
                 "layout_right::mapping product of static extents must be representable as index_type.");
 
-public:
   // [mdspan.layout.right.cons], constructors
   _LIBCPP_HIDE_FROM_ABI constexpr mapping() noexcept               = default;
   _LIBCPP_HIDE_FROM_ABI constexpr mapping(const mapping&) noexcept = default;
@@ -121,8 +105,7 @@ public:
       index_type __res = 0;
       ((__res = static_cast<index_type>(__idx) + __extents_.extent(_Pos) * __res), ...);
       return __res;
-    }
-    (make_index_sequence<sizeof...(_Indices)>());
+    }(make_index_sequence<sizeof...(_Indices)>());
   }
 
   _LIBCPP_HIDE_FROM_ABI static constexpr bool is_always_unique() noexcept { return true; }
@@ -133,7 +116,9 @@ public:
   _LIBCPP_HIDE_FROM_ABI static constexpr bool is_exhaustive() noexcept { return true; }
   _LIBCPP_HIDE_FROM_ABI static constexpr bool is_strided() noexcept { return true; }
 
-  _LIBCPP_HIDE_FROM_ABI constexpr index_type stride(rank_type __r) const noexcept requires(extents_type::rank() > 0) {
+  _LIBCPP_HIDE_FROM_ABI constexpr index_type stride(rank_type __r) const noexcept
+    requires(extents_type::rank() > 0)
+  {
     _LIBCPP_ASSERT(__r < extents_type::rank(), "layout_right::mapping::stride(): invalid rank index");
     index_type __s = 1;
     for (rank_type __i = extents_type::rank() - 1; __i > __r; __i--)
@@ -150,6 +135,19 @@ public:
 
 private:
   extents_type __extents_{}; // exposition only
+
+  _LIBCPP_HIDE_FROM_ABI static constexpr bool __required_span_size_is_representable(const extents_type& __ext) {
+    if constexpr (extents_type::rank() == 0)
+      return true;
+
+    index_type __prod = __ext.extent(0);
+    for (rank_type __r = 1; __r < extents_type::rank(); __r++) {
+      bool __overflowed = __builtin_mul_overflow(__prod, __ext.extent(__r), &__prod);
+      if (__overflowed)
+        return false;
+    }
+    return true;
+  }
 };
 
 #endif // _LIBCPP_STD_VER >= 23
@@ -158,4 +156,4 @@ _LIBCPP_END_NAMESPACE_STD
 
 _LIBCPP_POP_MACROS
 
-#endif // _LIBCPP___MDSPAN_LAYOUT_RIGHT_MAPPING_H
+#endif // _LIBCPP___MDSPAN_LAYOUT_RIGHT_H
