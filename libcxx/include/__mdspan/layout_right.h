@@ -19,8 +19,8 @@
 
 #include <__assert>
 #include <__config>
+#include <__fwd/mdspan.h>
 #include <__mdspan/extents.h>
-#include <__mdspan/layouts.h>
 #include <__type_traits/is_constructible.h>
 #include <__type_traits/is_convertible.h>
 #include <__type_traits/is_nothrow_constructible.h>
