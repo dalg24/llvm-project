@@ -59,15 +59,15 @@ constexpr bool check_operator_constraints(Mapping, Indices ...) {
 }
 
 template <class M, class T, class... Args>
-constexpr void iterate_right(M m, T& count, Args... args) {
-  constexpr size_t r = sizeof...(Args);
-  if constexpr (M::extents_type::rank() == r) {
+constexpr void iterate_left(M m, T& count, Args... args) {
+  constexpr int r = static_cast<int>(M::extents_type::rank()) - 1 - static_cast<int>(sizeof...(Args));
+  if constexpr (-1 == r) {
     ASSERT_NOEXCEPT(m(args...));
     assert(count == m(args...));
     count++;
   } else {
     for (typename M::index_type i = 0; i < m.extents().extent(r); i++) {
-      iterate_right(m, count, args..., i);
+      iterate_left(m, count, i, args...);
     }
   }
 }
@@ -78,7 +78,7 @@ constexpr void test_iteration(Args... args) {
   M m(E(args...));
 
   typename E::index_type count = 0;
-  iterate_right(m, count);
+  iterate_left(m, count);
 }
 
 constexpr bool test() {

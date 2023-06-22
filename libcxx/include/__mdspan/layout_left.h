@@ -117,9 +117,10 @@ public:
   _LIBCPP_HIDE_FROM_ABI constexpr index_type operator()(_Indices... __idx) const noexcept {
     _LIBCPP_ASSERT(__mdspan_detail::__is_multidimensional_index_in(__extents_, __idx...),
                    "layout_left::mapping: out of bounds indexing");
+    array<index_type, extents_type::rank()> __idx_a{static_cast<index_type>(__idx)...};
     return [&]<size_t... _Pos>(index_sequence<_Pos...>) {
       index_type __res = 0;
-      ((__res = static_cast<index_type>(__idx) + __extents_.extent(_Pos+1) * __res), ...);
+      ((__res = __idx_a[extents_type::rank()-1-_Pos] + __extents_.extent(extents_type::rank()-1-_Pos) * __res), ...);
       return __res;
     }(make_index_sequence<sizeof...(_Indices)>());
   }
