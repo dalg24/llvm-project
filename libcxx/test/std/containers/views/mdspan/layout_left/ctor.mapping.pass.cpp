@@ -76,7 +76,7 @@ using mapping_t = typename std::layout_left::template mapping<std::extents<IdxT,
 constexpr void test_no_implicit_conversion() {
   constexpr size_t D = std::dynamic_extent;
 
-  // Sanity check that one static to dyamic conversion works
+  // Sanity check that one static to dynamic conversion works
   static_assert(std::is_constructible_v<mapping_t<int, D>, mapping_t<int, 5>>);
   static_assert(std::is_convertible_v<mapping_t<int, 5>, mapping_t<int, D>>);
 
