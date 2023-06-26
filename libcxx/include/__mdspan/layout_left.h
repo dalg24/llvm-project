@@ -70,7 +70,7 @@ private:
                 "layout_left::mapping product of static extents must be representable as index_type.");
 
 public:
-  // [mdspan.layout.right.cons], constructors
+  // [mdspan.layout.left.cons], constructors
   _LIBCPP_HIDE_FROM_ABI constexpr mapping() noexcept               = default;
   _LIBCPP_HIDE_FROM_ABI constexpr mapping(const mapping&) noexcept = default;
   _LIBCPP_HIDE_FROM_ABI constexpr mapping(const extents_type& __ext) noexcept : __extents_(__ext) {
@@ -95,7 +95,7 @@ public:
       : __extents_(__other.extents()) {
     _LIBCPP_ASSERT(
         __mdspan_detail::__is_representable_as<index_type>(__other.required_span_size()),
-        "layout_right::mapping converting ctor: other.required_span_size() must be representable as index_type.");
+        "layout_left::mapping converting ctor: other.required_span_size() must be representable as index_type.");
   }
 
 // FIXME: add when we add other layouts
@@ -107,7 +107,7 @@ public:
 
   _LIBCPP_HIDE_FROM_ABI constexpr mapping& operator=(const mapping&) noexcept = default;
 
-  // [mdspan.layout.right.obs], observers
+  // [mdspan.layout.left.obs], observers
   _LIBCPP_HIDE_FROM_ABI constexpr const extents_type& extents() const noexcept { return __extents_; }
 
   _LIBCPP_HIDE_FROM_ABI constexpr index_type required_span_size() const noexcept {
@@ -126,7 +126,8 @@ public:
     array<index_type, extents_type::rank()> __idx_a{static_cast<index_type>(__idx)...};
     return [&]<size_t... _Pos>(index_sequence<_Pos...>) {
       index_type __res = 0;
-      ((__res = __idx_a[extents_type::rank()-1-_Pos] + __extents_.extent(extents_type::rank()-1-_Pos) * __res), ...);
+      ((__res = __idx_a[extents_type::rank() - 1 - _Pos] + __extents_.extent(extents_type::rank() - 1 - _Pos) * __res),
+       ...);
       return __res;
     }(make_index_sequence<sizeof...(_Indices)>());
   }

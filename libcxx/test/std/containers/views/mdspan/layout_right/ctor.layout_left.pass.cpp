@@ -105,6 +105,7 @@ constexpr void test_rank_greater_one() {
   constexpr size_t D = std::dynamic_extent;
 
   static_assert(!std::is_constructible_v<lr_mapping_t<int, D, D>, ll_mapping_t<int, D, D>>);
+  static_assert(!std::is_constructible_v<lr_mapping_t<int, 1, 1>, ll_mapping_t<int, 1, 1>>);
   static_assert(!std::is_constructible_v<lr_mapping_t<int, D, D, D>, ll_mapping_t<int, D, D, D>>);
 }
 
@@ -122,6 +123,6 @@ constexpr bool test() {
 
 int main(int, char**) {
   test();
-  //static_assert(test());
+  static_assert(test());
   return 0;
 }
