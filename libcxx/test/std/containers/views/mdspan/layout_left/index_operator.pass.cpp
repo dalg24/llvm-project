@@ -28,16 +28,7 @@
 
 #include "test_macros.h"
 
-struct IntType {
-  int val;
-  constexpr IntType() = default;
-  constexpr IntType(int v) noexcept : val(v){};
-
-  constexpr bool operator==(const IntType& rhs) const { return val == rhs.val; }
-  constexpr operator int() const noexcept { return val; }
-  constexpr operator unsigned char() const { return val; }
-};
-
+#include "../ConvertibleToIntegral.h"
 
 template<class Mapping, class ... Indices>
 concept operator_constraints = requires(Mapping m, Indices ... idxs) {

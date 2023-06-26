@@ -40,5 +40,14 @@ int main(int, char**) {
     TEST_LIBCPP_ASSERT_FAILURE(([=] { std::layout_right::mapping<std::extents<int, 3>> m(arg); }()),
                                "extents construction: mismatch of provided arguments with static extents.");
   }
+  // non-representability of extents itself
+  {
+    TEST_LIBCPP_ASSERT_FAILURE(([=] { std::layout_right::mapping<std::extents<char, D>> m(
+                                 std::layout_left::mapping<std::extents<int, D>>(std::extents<int, D>(500))); }()),
+                               "extents ctor: arguments must be representable as index_type and nonnegative");
+  }
+
+  // Can't trigger required_span_size() representability assertion, since for rank-1 the above check will trigger first,
+  // and this conversion constructor is constrained on rank <= 1.
   return 0;
 }
