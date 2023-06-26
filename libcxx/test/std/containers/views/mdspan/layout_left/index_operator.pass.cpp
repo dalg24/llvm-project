@@ -84,10 +84,13 @@ constexpr void test_iteration(Args... args) {
 constexpr bool test() {
   constexpr size_t D = std::dynamic_extent;
   test_iteration<std::extents<int>>();
+  test_iteration<std::extents<unsigned, D>>(1);
   test_iteration<std::extents<unsigned, D>>(7);
   test_iteration<std::extents<unsigned, 7>>();
   test_iteration<std::extents<unsigned, 7, 8>>();
   test_iteration<std::extents<int64_t, D, 8, D, D>>(7, 9, 10);
+  test_iteration<std::extents<int64_t, D, 8, 1, D>>(7, 10);
+  test_iteration<std::extents<char, D, D, D, D>>(1, 1, 1, 1);
 
   // Check operator constraint for number of arguments
   static_assert(check_operator_constraints(std::layout_left::mapping<std::extents<int, D>>(std::extents<int, D>(1)), 0));

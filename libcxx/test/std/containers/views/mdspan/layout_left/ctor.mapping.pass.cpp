@@ -19,7 +19,6 @@
 
 #include <mdspan>
 #include <type_traits>
-#include <concepts> // what do we use from there?
 #include <cassert>
 #include <limits>
 
