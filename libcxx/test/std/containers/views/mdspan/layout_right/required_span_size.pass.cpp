@@ -9,12 +9,10 @@
 
 // <mdspan>
 
-// constexpr mapping(const extents_type&) noexcept;
+// constexpr index_type required_span_size() const noexcept;
 //
-// Preconditions: The size of the multidimensional index space e is representable
-//                as a value of type index_type ([basic.fundamental]).
-//
-// Effects: Direct-non-list-initializes extents_ with e.
+// Returns: extents().fwd-prod-of-extents(extents_type::rank()).
+
 
 #include <mdspan>
 #include <cassert>
@@ -23,7 +21,7 @@
 #include "test_macros.h"
 
 template <class E>
-constexpr void test_construction(E e, typename E::index_type expected_size) {
+constexpr void test_required_span_size(E e, typename E::index_type expected_size) {
   using M = std::layout_right::mapping<E>;
   const M m(e);
 
@@ -34,15 +32,15 @@ constexpr void test_construction(E e, typename E::index_type expected_size) {
 
 constexpr bool test() {
   constexpr size_t D = std::dynamic_extent;
-  test_construction(std::extents<int>(), 1);
-  test_construction(std::extents<unsigned, D>(0), 0);
-  test_construction(std::extents<unsigned, D>(1), 1);
-  test_construction(std::extents<unsigned, D>(7), 7);
-  test_construction(std::extents<unsigned, 7>(), 7);
-  test_construction(std::extents<unsigned, 7, 8>(), 56);
-  test_construction(std::extents<int64_t, D, 8, D, D>(7, 9, 10), 5040);
-  test_construction(std::extents<int64_t, 1, 8, D, D>(9, 10), 720);
-  test_construction(std::extents<int64_t, 1, 0, D, D>(9, 10), 0);
+  test_required_span_size(std::extents<int>(), 1);
+  test_required_span_size(std::extents<unsigned, D>(0), 0);
+  test_required_span_size(std::extents<unsigned, D>(1), 1);
+  test_required_span_size(std::extents<unsigned, D>(7), 7);
+  test_required_span_size(std::extents<unsigned, 7>(), 7);
+  test_required_span_size(std::extents<unsigned, 7, 8>(), 56);
+  test_required_span_size(std::extents<int64_t, D, 8, D, D>(7, 9, 10), 5040);
+  test_required_span_size(std::extents<int64_t, 1, 8, D, D>(9, 10), 720);
+  test_required_span_size(std::extents<int64_t, 1, 0, D, D>(9, 10), 0);
   return true;
 }
 
