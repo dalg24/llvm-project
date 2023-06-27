@@ -25,7 +25,6 @@ constexpr void test_required_span_size(E e, typename E::index_type expected_size
   using M = std::layout_right::mapping<E>;
   const M m(e);
 
-  // check required_span_size()
   ASSERT_NOEXCEPT(m.required_span_size());
   assert(m.required_span_size() == expected_size);
 }
