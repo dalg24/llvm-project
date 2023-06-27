@@ -32,8 +32,8 @@ _LIBCPP_BEGIN_NAMESPACE_STD
 
 // Layout policy with a mapping which corresponds to FORTRAN-style array layouts
 struct layout_left {
-  template<class Extents>
-    class mapping;
+  template <class Extents>
+  class mapping;
 };
 
 // Layout policy with a mapping which corresponds to C-style array layouts
