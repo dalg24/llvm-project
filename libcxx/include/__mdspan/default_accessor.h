@@ -18,6 +18,8 @@
 #define _LIBCPP___MDSPAN_DEFAULT_ACCESSOR_H
 
 #include <__config>
+#include <__type_traits/is_abstract.h>
+#include <__type_traits/is_array.h>
 #include <__type_traits/is_convertible.h>
 #include <cinttypes>
 
@@ -32,19 +34,22 @@ _LIBCPP_BEGIN_NAMESPACE_STD
 
 #if _LIBCPP_STD_VER >= 23
 
-template<class ElementType>
+template <class ElementType>
 struct default_accessor {
-  using offset_policy = default_accessor;
-  using element_type = ElementType;
-  using reference = ElementType&;
+  static_assert(!is_array_v<ElementType>, "default_accessor: template argument may not be an array type");
+  static_assert(!is_abstract_v<ElementType>, "default_accessor: template argument may not be an abstract class");
+
+  using offset_policy    = default_accessor;
+  using element_type     = ElementType;
+  using reference        = ElementType&;
   using data_handle_type = ElementType*;
 
   _LIBCPP_HIDE_FROM_ABI constexpr default_accessor() noexcept = default;
-  template<class OtherElementType>
-    requires(is_convertible_v<OtherElementType(*)[], element_type(*)[]>)
+  template <class OtherElementType>
+    requires(is_convertible_v<OtherElementType (*)[], element_type (*)[]>)
   _LIBCPP_HIDE_FROM_ABI constexpr default_accessor(default_accessor<OtherElementType>) noexcept {}
   _LIBCPP_HIDE_FROM_ABI constexpr reference access(data_handle_type p, size_t i) const noexcept { return p[i]; }
-  _LIBCPP_HIDE_FROM_ABI constexpr data_handle_type offset(data_handle_type p, size_t i) const noexcept { return p+i; }
+  _LIBCPP_HIDE_FROM_ABI constexpr data_handle_type offset(data_handle_type p, size_t i) const noexcept { return p + i; }
 };
 
 #endif // _LIBCPP_STD_VER >= 23
