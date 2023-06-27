@@ -14,7 +14,7 @@
 //     mapping(const layout_left::mapping<OtherExtents>&) noexcept;
 
 // Constraints:
-//   - extents_type::rank() <= 1 is true, and 
+//   - extents_type::rank() <= 1 is true, and
 //   - is_constructible_v<extents_type, OtherExtents> is true.
 //
 // Preconditions: other.required_span_size() is representable as a value of type index_type
