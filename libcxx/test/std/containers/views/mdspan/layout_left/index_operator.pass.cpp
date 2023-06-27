@@ -79,8 +79,6 @@ constexpr bool test() {
   test_iteration<std::extents<unsigned, D>>(7);
   test_iteration<std::extents<unsigned, 7>>();
   test_iteration<std::extents<unsigned, 7, 8>>();
-  test_iteration<std::extents<int64_t, D, 8, D, D>>(7, 9, 10);
-  test_iteration<std::extents<int64_t, D, 8, 1, D>>(7, 10);
   test_iteration<std::extents<char, D, D, D, D>>(1, 1, 1, 1);
 
   // Check operator constraint for number of arguments
@@ -97,8 +95,21 @@ constexpr bool test() {
   return true;
 }
 
+constexpr bool test_large() {
+  constexpr size_t D = std::dynamic_extent;
+  test_iteration<std::extents<int64_t, D, 8, D, D>>(7, 9, 10);
+  test_iteration<std::extents<int64_t, D, 8, 1, D>>(7, 10);
+  return true;
+}
+
 int main(int, char**) {
   test();
   static_assert(test());
+
+  // The large test iterates over ~10k loop indices.
+  // With assertions enabled this triggered the maximum default limit
+  // for steps in consteval expressions. Assertions roughly double the
+  // total number of instructions, so this was already close to the maximum.
+  test_large();
   return 0;
 }
