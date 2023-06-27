@@ -17,4 +17,21 @@ struct MinimalElementType {
   constexpr MinimalElementType& operator=(const MinimalElementType&) = delete;
 };
 
+template<class T>
+struct MinimalElementTypeDataHelper {
+  T ptr[128];
+  constexpr MinimalElementTypeDataHelper() = default;
+  constexpr T* get_ptr() { return ptr; }
+};
+
+template<>
+struct MinimalElementTypeDataHelper<MinimalElementType> {
+  MinimalElementType* ptr;
+  char data_ptr[512];
+  MinimalElementTypeDataHelper() {
+      ptr = reinterpret_cast<MinimalElementType*>(data_ptr);
+  }
+  constexpr MinimalElementType* get_ptr() { return ptr; }
+};
+
 #endif // TEST_STD_CONTAINERS_MINIMAL_ELEMENT_TYPE_H
