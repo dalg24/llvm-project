@@ -25,6 +25,7 @@
 #include <__type_traits/is_convertible.h>
 #include <__type_traits/is_nothrow_constructible.h>
 #include <__utility/integer_sequence.h>
+#include <array>
 #include <cinttypes>
 #include <cstddef>
 #include <limits>
