@@ -16,6 +16,7 @@
 #include <mdspan>
 #include <cassert>
 #include <cstdint>
+#include <type_traits>
 
 #include "test_macros.h"
 
@@ -25,6 +26,7 @@ template <class T>
 constexpr void test_construction() {
   ASSERT_NOEXCEPT(std::default_accessor<T>{});
   [[maybe_unused]] std::default_accessor<T> acc;
+  static_assert(std::is_trivially_default_constructible_v<std::default_accessor<T>>);
 }
 
 constexpr bool test() {

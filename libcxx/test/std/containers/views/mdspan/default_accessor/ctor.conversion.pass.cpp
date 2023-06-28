@@ -19,18 +19,20 @@
 #include <mdspan>
 #include <cassert>
 #include <cstdint>
+#include <type_traits>
 
 #include "test_macros.h"
 
 #include "../MinimalElementType.h"
 
+struct Base {};
+struct Derived: public Base {};
+
 template <class FromT, class ToT>
 constexpr void test_conversion() {
-  using acc_from_t = std::default_accessor<FromT>;
-  using acc_to_t = std::default_accessor<ToT>;
-  acc_from_t acc_from;
-  ASSERT_NOEXCEPT(acc_to_t(acc_from));
-  [[maybe_unused]] acc_to_t acc_to(acc_from);
+  std::default_accessor<FromT> acc_from;
+  ASSERT_NOEXCEPT(std::default_accessor<ToT>(acc_from));
+  [[maybe_unused]] std::default_accessor<ToT> acc_to(acc_from);
 }
 
 constexpr bool test() {
@@ -50,6 +52,10 @@ constexpr bool test() {
   static_assert(!std::is_constructible_v<std::default_accessor<MinimalElementType>, std::default_accessor<int>>);
   // don't allow conversion from const elements to non-const
   static_assert(!std::is_constructible_v<std::default_accessor<MinimalElementType>, std::default_accessor<const MinimalElementType>>);
+  // don't allow conversion from Base to Derived
+  static_assert(!std::is_constructible_v<std::default_accessor<Derived>, std::default_accessor<Base>>);
+  // don't allow conversion from Derived to Base
+  static_assert(!std::is_constructible_v<std::default_accessor<Base>, std::default_accessor<Derived>>);
 
   return true;
 }
