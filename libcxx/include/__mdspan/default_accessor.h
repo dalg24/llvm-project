@@ -21,6 +21,7 @@
 #include <__type_traits/is_abstract.h>
 #include <__type_traits/is_array.h>
 #include <__type_traits/is_convertible.h>
+#include <__type_traits/remove_const.h>
 #include <cinttypes>
 #include <cstddef>
 
