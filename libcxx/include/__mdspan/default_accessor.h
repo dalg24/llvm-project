@@ -22,6 +22,7 @@
 #include <__type_traits/is_array.h>
 #include <__type_traits/is_convertible.h>
 #include <cinttypes>
+#include <cstddef>
 
 #if !defined(_LIBCPP_HAS_NO_PRAGMA_SYSTEM_HEADER)
 #  pragma GCC system_header
