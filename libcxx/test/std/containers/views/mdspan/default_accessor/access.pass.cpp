@@ -15,6 +15,7 @@
 
 #include <mdspan>
 #include <cassert>
+#include <type_traits>
 
 #include "test_macros.h"
 
