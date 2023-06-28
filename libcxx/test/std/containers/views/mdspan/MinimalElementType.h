@@ -9,6 +9,8 @@
 #ifndef TEST_STD_CONTAINERS_MINIMAL_ELEMENT_TYPE_H
 #define TEST_STD_CONTAINERS_MINIMAL_ELEMENT_TYPE_H
 
+// Idiosyncratic element type for mdspan
+// Make sure we don't assume copyable, default constructible etc.
 struct MinimalElementType {
   int val;
   constexpr MinimalElementType() = delete;
@@ -17,6 +19,7 @@ struct MinimalElementType {
   constexpr MinimalElementType& operator=(const MinimalElementType&) = delete;
 };
 
+// Helper class to create pointer of MinimalElementType
 template<class T>
 struct MinimalElementTypeDataHelper {
   T ptr[128];
@@ -24,6 +27,7 @@ struct MinimalElementTypeDataHelper {
   constexpr T* get_ptr() { return ptr; }
 };
 
+// Alignment of this class is implicitly correct due to ptr
 template<>
 struct MinimalElementTypeDataHelper<MinimalElementType> {
   MinimalElementType* ptr;
