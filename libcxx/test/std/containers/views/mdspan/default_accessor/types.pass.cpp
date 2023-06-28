@@ -15,7 +15,7 @@
 //    using element_type = ElementType;
 //    using reference = ElementType&;
 //    using data_handle_type = ElementType*;
-//    ... 
+//    ...
 //  };
 //
 //  Each specialization of default_accessor is a trivially copyable type that models semiregular.
