@@ -41,10 +41,7 @@ void test() {
   static_assert(std::semiregular<A>);
   static_assert(std::is_trivially_copyable_v<A>);
 
-// Did never find a way to make this true on windows
-#ifndef _WIN32
   LIBCPP_STATIC_ASSERT(std::is_empty_v<A>);
-#endif
 }
 
 int main(int, char**) {
