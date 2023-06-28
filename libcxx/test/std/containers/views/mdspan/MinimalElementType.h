@@ -9,33 +9,37 @@
 #ifndef TEST_STD_CONTAINERS_MINIMAL_ELEMENT_TYPE_H
 #define TEST_STD_CONTAINERS_MINIMAL_ELEMENT_TYPE_H
 
+#include<memory>
+
 // Idiosyncratic element type for mdspan
 // Make sure we don't assume copyable, default constructible etc.
 struct MinimalElementType {
   int val;
   constexpr MinimalElementType() = delete;
   constexpr MinimalElementType(const MinimalElementType&) = delete;
-  constexpr explicit MinimalElementType(int v) noexcept : val(v){};
+  constexpr explicit MinimalElementType(int v) noexcept : val(v){}
   constexpr MinimalElementType& operator=(const MinimalElementType&) = delete;
 };
 
-// Helper class to create pointer of MinimalElementType
-template<class T>
-struct MinimalElementTypeDataHelper {
-  T ptr[128];
-  constexpr MinimalElementTypeDataHelper() = default;
-  constexpr T* get_ptr() { return ptr; }
-};
-
-// Alignment of this class is implicitly correct due to ptr
-template<>
-struct MinimalElementTypeDataHelper<MinimalElementType> {
-  MinimalElementType* ptr;
-  char data_ptr[512];
-  MinimalElementTypeDataHelper() {
-      ptr = reinterpret_cast<MinimalElementType*>(data_ptr);
+// Helper class to create pointer to MinimalElementType
+template<class T, size_t N>
+struct ElementPool {
+  constexpr ElementPool() {
+    ptr_ = std::allocator<T>().allocate(N);
+    for (int i = 0; i != N; ++i)
+      std::construct_at(ptr_ + i, 42);
   }
-  constexpr MinimalElementType* get_ptr() { return ptr; }
+
+  constexpr T* get_ptr() { return ptr_; }
+
+  constexpr ~ElementPool() {
+    for (int i = 0; i != N; ++i)
+      std::destroy_at(ptr_ + i);
+    std::allocator<T>().deallocate(ptr_, N);
+  }
+
+private:
+  T* ptr_;
 };
 
 #endif // TEST_STD_CONTAINERS_MINIMAL_ELEMENT_TYPE_H

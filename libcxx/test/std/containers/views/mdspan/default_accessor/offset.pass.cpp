@@ -22,26 +22,22 @@
 #include "../MinimalElementType.h"
 
 template <class T>
-constexpr void test_construction() {
-  // Need this helper because MinimalElementType is not default constructible
-  MinimalElementTypeDataHelper<std::remove_const_t<T>> data;
+constexpr void test_offset() {
+  ElementPool<std::remove_const_t<T>, 10> data;
   T* ptr = data.get_ptr();
   std::default_accessor<T> acc;
-  for(int i=0; i<10; i++) {
+  for(int i = 0; i < 10; i++) {
     static_assert(std::is_same_v<decltype(acc.offset(ptr, i)), typename std::default_accessor<T>::data_handle_type>);
     ASSERT_NOEXCEPT(acc.offset(ptr, i));
-    assert(data.ptr + i == acc.offset(ptr, i));
+    assert(acc.offset(ptr, i) == ptr + i);
   }
 }
 
 constexpr bool test() {
-  test_construction<int>();
-  test_construction<const int>();
-  // MinimalElementType can't be constructed in consteval scope
-  if !consteval {
-    test_construction<MinimalElementType>();
-    test_construction<const MinimalElementType>();
-  }
+  test_offset<int>();
+  test_offset<const int>();
+  test_offset<MinimalElementType>();
+  test_offset<const MinimalElementType>();
   return true;
 }
 
